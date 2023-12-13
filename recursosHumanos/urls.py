@@ -25,4 +25,6 @@ urlpatterns = [
     path('usuario2/', vistaUsuario2),
     path('usuarioAPI/', vistaUsuarioApi),
     path('usuarioAPI/<int:pk>', detallesUsuarioAPI),
+    path('personaAPI/', listaPersona.as_view()),
+    path('personaAPI/<int:pk>', detallePersona.as_view()),
 ]

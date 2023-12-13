@@ -8,6 +8,8 @@ from gestionUsuarios.models import Usuario
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from django.http import Http404
 
 
 # Create your views here.
@@ -44,7 +46,6 @@ def vistaUsuarioApi(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 # Consultar persona con su id -> get (id)
 # Actualizar la persona el id -> put (id)
@@ -70,4 +71,44 @@ def detallesUsuarioAPI(request, pk):
     
     if request.method == 'DELETE':
         usuario.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class listaPersona(APIView):
+    def get(self, request):
+        usuarios = Usuario.objects.all()
+        serializer = UsuarioSerializer(usuarios, many = True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = UsuarioSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class detallePersona(APIView):
+    def get_object(self, pk):
+        try:
+            return Usuario.objects.get(pk=pk)
+        except Usuario.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        persona = self.get_object(pk)
+        serializer = UsuarioSerializer(persona)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        persona = self.get_object(pk)
+        serializer = UsuarioSerializer(persona, data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        persona = self.get_object(pk)
+        persona.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

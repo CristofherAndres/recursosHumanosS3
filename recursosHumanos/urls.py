@@ -24,4 +24,5 @@ urlpatterns = [
     path('usuario/', vistaUsuario),
     path('usuario2/', vistaUsuario2),
     path('usuarioAPI/', vistaUsuarioApi),
+    path('usuarioAPI/<int:pk>', detallesUsuarioAPI),
 ]
